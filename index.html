@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Page Title</title>
+<script type="text/javascript" src="knockout-3.3.0.js"></script>
+<script type="text/javascript" src="knockout.mapping-latest.js"></script>
+
+
+</head>
+<body>
+
+<span>first name &nbsp;</span><input type="text" data-bind="value: firstName, valueUpdate:'keyup'"/>
+<span>last name &nbsp;</span><input type="text" data-bind="value: lastName"/>
+
+<hr>
+
+<p><span data-bind="text:firstName"></span></p>
+<p><span data-bind="text: lastName"></span></p>
+
+<hr>
+
+<p><span data-bind="text: fullName"></span></p>
+
+<hr>
+<p>How many friends do u have ? oh..<span data-bind="text: friends().length"></span></p>
+
+<ul data-bind="foreach:friends">
+    <li data-bind="css:styleFriend">
+        <span data-bind="text: name"></span>
+        <input type="checkbox" data-bind="checked:knowLang"/>
+        <input type="text" data-bind="value: favLang, visible:knowLang"/>
+        <input type="button" value="x" data-bind="click: removeFriend" />
+        <input type="text" data-bind="value: noLang"/>
+    </li>
+</ul>
+<input type="button" value="add new friend" data-bind="click: addFriend, enable: friends().length < 10" />
+
+
+</body>
+<script type="text/javascript">
+
+
+function Frnd(){
+    return{
+    name:"Nishant",
+    knowLang:true,
+    favLang:"python",
+    isWeird:false,
+    noLang:10,
+    }
+
+}
+
+function Friend(frnd){
+    var map=ko.mapping.fromJS(frnd);
+    map.removeFriend=function(){
+        obj.friends.remove(this);
+    }
+    map.styleFriend=ko.computed(function(){
+        var lang = map.noLang();
+        if (lang < 3) return 'green';
+        if (lang>5 && lang < 9) return 'blue';
+        if (lang>=10) return 'red';
+    })
+    return map;
+
+}
+
+/*function Friend(name){
+    this.name=name;
+    this.knowLang=ko.observable(false);
+    this.favLang=ko.observable('');
+    this.removeFriend=function(){
+        obj.friends.remove(this);
+    }
+
+}
+*/
+
+var obj = {
+    firstName :ko.observable("ko engine started"),
+    lastName: ko.observable("ko engine started"),
+    friends: ko.observableArray([new Friend(new Frnd())]),
+
+};
+
+obj.fullName = ko.computed(function(){
+    return obj.firstName()+ " "+obj.lastName();
+})
+
+obj.firstName.subscribe(function(){
+alert('someone changed me');
+
+})
+
+obj.addFriend=function(){
+obj.friends.push(new Friend(new Frnd()))
+
+}
+
+ko.applyBindings(obj);
+</script>
+<style>
+.green{color:green;}
+.red{color:red;}
+.blue{color:blue};
+
+</style>
+
+</html>
+
